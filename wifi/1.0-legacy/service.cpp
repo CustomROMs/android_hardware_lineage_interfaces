@@ -35,12 +35,6 @@ using android::hardware::wifi::V1_3::implementation::legacy_hal::WifiLegacyHal;
 using android::hardware::wifi::V1_3::implementation::mode_controller::
     WifiModeController;
 
-#ifdef LAZY_SERVICE
-const bool kLazyService = true;
-#else
-const bool kLazyService = false;
-#endif
-
 int main(int /*argc*/, char** argv) {
     android::base::InitLogging(
         argv, android::base::LogdLogger(android::base::SYSTEM));
@@ -57,14 +51,8 @@ int main(int /*argc*/, char** argv) {
             std::make_shared<WifiModeController>(),
             std::make_shared<WifiIfaceUtil>(iface_tool),
             std::make_shared<WifiFeatureFlags>());
-    if (kLazyService) {
-        LazyServiceRegistrar registrar;
-        CHECK_EQ(registrar.registerService(service), android::NO_ERROR)
-            << "Failed to register wifi HAL";
-    } else {
         CHECK_EQ(service->registerAsService(), android::NO_ERROR)
             << "Failed to register wifi HAL";
-    }
 
     joinRpcThreadpool();
 
